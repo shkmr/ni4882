@@ -69,7 +69,7 @@ uninstall :
 
 clean :
 	$(GAUCHE_PACKAGE) compile --clean ni4882 $(ni4882_SRCS)
-	rm -rf core $(TARGET) $(GENERATED) *~ test.log so_locations
+	rm -rf core $(TARGET) $(GENERATED) *~ test.log so_locations ni4882lib.c
 
 distclean : clean
 	rm -rf $(CONFIG_GENERATED)
