@@ -1,0 +1,6 @@
+Makefile
+VERSION
+ni4882.gpd
+*.log
+*.o
+*.so
