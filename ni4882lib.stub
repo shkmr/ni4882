@@ -5,10 +5,212 @@
 "
 #include \"ni4882.h\"
 "
+;;
+;; Command codes
+;;
+(define-constant UNL  (c "SCM_MAKE_INT(UNL)"))
+(define-constant UNT  (c "SCM_MAKE_INT(UNT)"))
+(define-constant GTL  (c "SCM_MAKE_INT(GTL)"))
+(define-constant SDC  (c "SCM_MAKE_INT(SDC)"))
+(define-constant PPC  (c "SCM_MAKE_INT(PPC)"))
+(define-constant GET  (c "SCM_MAKE_INT(GET)"))
+(define-constant TCT  (c "SCM_MAKE_INT(TCT)"))
+(define-constant LLO  (c "SCM_MAKE_INT(LLO)"))
+(define-constant DCL  (c "SCM_MAKE_INT(DCL)"))
+(define-constant PPU  (c "SCM_MAKE_INT(PPU)"))
+(define-constant SPE  (c "SCM_MAKE_INT(SPE)"))
+(define-constant SPD  (c "SCM_MAKE_INT(SPD)"))
+(define-constant PPE  (c "SCM_MAKE_INT(PPE)"))
+(define-constant PPD  (c "SCM_MAKE_INT(PPD)"))
+
+;;
+;; GPIB status bit vector: global variable ibsta and wait mask
+;;
+(define-constant ERR  (c "SCM_MAKE_INT(ERR)"))
+(define-constant TIMO (c "SCM_MAKE_INT(TIMO)"))
+(define-constant END  (c "SCM_MAKE_INT(END)"))
+(define-constant SRQI (c "SCM_MAKE_INT(SRQI)"))
+(define-constant RQS  (c "SCM_MAKE_INT(RQS)"))
+(define-constant CMPL (c "SCM_MAKE_INT(CMPL)"))
+(define-constant LOK  (c "SCM_MAKE_INT(LOK)"))
+(define-constant REM  (c "SCM_MAKE_INT(REM)"))
+(define-constant CIC  (c "SCM_MAKE_INT(CIC)"))
+(define-constant ATN  (c "SCM_MAKE_INT(ATN)"))
+(define-constant TACS (c "SCM_MAKE_INT(TACS)"))
+(define-constant LACS (c "SCM_MAKE_INT(LACS)"))
+(define-constant DTAS (c "SCM_MAKE_INT(DTAS)"))
+(define-constant DCAS (c "SCM_MAKE_INT(DCAS)"))
+
+
+;;
+;; Error messages returned in global variable iberr
+;;
+(define-constant EDVR (c "SCM_MAKE_INT(EDVR)"))
+(define-constant ECIC (c "SCM_MAKE_INT(ECIC)"))
+(define-constant ENOL (c "SCM_MAKE_INT(ENOL)"))
+(define-constant EADR (c "SCM_MAKE_INT(EADR)"))
+(define-constant EARG (c "SCM_MAKE_INT(EARG)"))
+(define-constant ESAC (c "SCM_MAKE_INT(ESAC)"))
+(define-constant EABO (c "SCM_MAKE_INT(EABO)"))
+(define-constant ENEB (c "SCM_MAKE_INT(ENEB)"))
+(define-constant EDMA (c "SCM_MAKE_INT(EDMA)"))
+(define-constant EOIP (c "SCM_MAKE_INT(EOIP)"))
+(define-constant ECAP (c "SCM_MAKE_INT(ECAP)"))
+(define-constant EFSO (c "SCM_MAKE_INT(EFSO)"))
+(define-constant EBUS (c "SCM_MAKE_INT(EBUS)"))
+(define-constant ESTB (c "SCM_MAKE_INT(ESTB)"))
+(define-constant ESRQ (c "SCM_MAKE_INT(ESRQ)"))
+(define-constant ETAB (c "SCM_MAKE_INT(ETAB)"))
+(define-constant ELCK (c "SCM_MAKE_INT(ELCK)"))
+(define-constant EARM (c "SCM_MAKE_INT(EARM)"))
+(define-constant EHDL (c "SCM_MAKE_INT(EHDL)"))
+(define-constant EWIP (c "SCM_MAKE_INT(EWIP)"))
+(define-constant ERST (c "SCM_MAKE_INT(ERST)"))
+(define-constant EPWR (c "SCM_MAKE_INT(EPWR)"))
+
+;;
+;; Warning messages returned in global variable iberr
+;;
+(define-constant WCFG (c "SCM_MAKE_INT(WCFG)"))
+(define-constant ECFG (c "SCM_MAKE_INT(ECFG)"))
+
+;;
+;; EOS mode bits
+;;
+(define-constant BIN  (c "SCM_MAKE_INT(BIN)"))
+(define-constant XEOS (c "SCM_MAKE_INT(XEOS)"))
+(define-constant REOS (c "SCM_MAKE_INT(REOS)"))
+
+;;
+;; Timeout values
+;;
+(define-constant TNONE    (c "SCM_MAKE_INT(TNONE)"))
+(define-constant T10us    (c "SCM_MAKE_INT(T10us)"))
+(define-constant T30us    (c "SCM_MAKE_INT(T30us)"))
+(define-constant T100us   (c "SCM_MAKE_INT(T100us)"))
+(define-constant T300us   (c "SCM_MAKE_INT(T300us)"))
+(define-constant T1ms     (c "SCM_MAKE_INT(T1ms)"))
+(define-constant T3ms     (c "SCM_MAKE_INT(T3ms)"))
+(define-constant T10ms    (c "SCM_MAKE_INT(T10ms)"))
+(define-constant T30ms    (c "SCM_MAKE_INT(T30ms)"))
+(define-constant T100ms   (c "SCM_MAKE_INT(T100ms)"))
+(define-constant T300ms   (c "SCM_MAKE_INT(T300ms)"))
+(define-constant T1s      (c "SCM_MAKE_INT(T1s)"))
+(define-constant T3s      (c "SCM_MAKE_INT(T3s)"))
+(define-constant T10s     (c "SCM_MAKE_INT(T10s)"))
+(define-constant T30s     (c "SCM_MAKE_INT(T30s)"))
+(define-constant T100s    (c "SCM_MAKE_INT(T100s)"))
+(define-constant T300s    (c "SCM_MAKE_INT(T300s)"))
+(define-constant T1000s   (c "SCM_MAKE_INT(T1000s)"))
+
+;;
+;;
+;;
+(define-constant NO_SAD             (c "SCM_MAKE_INT(NO_SAD)"))
+(define-constant ALL_SAD            (c "SCM_MAKE_INT(ALL_SAD)"))
+
+;;
+;;
+;;
+(define-constant IbcPAD             (c "SCM_MAKE_INT(IbcPAD)"))
+(define-constant IbcSAD             (c "SCM_MAKE_INT(IbcSAD)"))
+(define-constant IbcTMO             (c "SCM_MAKE_INT(IbcTMO)"))
+(define-constant IbcEOT             (c "SCM_MAKE_INT(IbcEOT)"))
+(define-constant IbcPPC             (c "SCM_MAKE_INT(IbcPPC)"))
+(define-constant IbcREADDR          (c "SCM_MAKE_INT(IbcREADDR)"))
+(define-constant IbcAUTOPOLL        (c "SCM_MAKE_INT(IbcAUTOPOLL)"))
+(define-constant IbcSC              (c "SCM_MAKE_INT(IbcSC)"))
+(define-constant IbcSRE             (c "SCM_MAKE_INT(IbcSRE)"))
+(define-constant IbcEOSrd           (c "SCM_MAKE_INT(IbcEOSrd)"))
+(define-constant IbcEOSwrt          (c "SCM_MAKE_INT(IbcEOSwrt)"))
+(define-constant IbcEOScmp          (c "SCM_MAKE_INT(IbcEOScmp)"))
+(define-constant IbcEOSchar         (c "SCM_MAKE_INT(IbcEOSchar)"))
+(define-constant IbcPP2             (c "SCM_MAKE_INT(IbcPP2)"))
+(define-constant IbcTIMING          (c "SCM_MAKE_INT(IbcTIMING)"))
+(define-constant IbcDMA             (c "SCM_MAKE_INT(IbcDMA)"))
+(define-constant IbcSendLLO         (c "SCM_MAKE_INT(IbcSendLLO)"))
+(define-constant IbcSPollTime       (c "SCM_MAKE_INT(IbcSPollTime)"))
+(define-constant IbcPPollTime       (c "SCM_MAKE_INT(IbcPPollTime)"))
+(define-constant IbcEndBitIsNormal  (c "SCM_MAKE_INT(IbcEndBitIsNormal)"))
+(define-constant IbcUnAddr          (c "SCM_MAKE_INT(IbcUnAddr)"))
+(define-constant IbcHSCableLength   (c "SCM_MAKE_INT(IbcHSCableLength)"))
+(define-constant IbcIst             (c "SCM_MAKE_INT(IbcIst)"))
+(define-constant IbcRsv             (c "SCM_MAKE_INT(IbcRsv)"))
+(define-constant IbcLON             (c "SCM_MAKE_INT(IbcLON)"))
+(define-constant IbcEOS             (c "SCM_MAKE_INT(IbcEOS)"))
+
+;;
+;;
+;;
+(define-constant IbaPAD             (c "SCM_MAKE_INT(IbaPAD)"))
+(define-constant IbaSAD             (c "SCM_MAKE_INT(IbaSAD)"))
+(define-constant IbaTMO             (c "SCM_MAKE_INT(IbaTMO)"))
+(define-constant IbaEOT             (c "SCM_MAKE_INT(IbaEOT)"))
+(define-constant IbaPPC             (c "SCM_MAKE_INT(IbaPPC)"))
+(define-constant IbaREADDR          (c "SCM_MAKE_INT(IbaREADDR)"))
+(define-constant IbaAUTOPOLL        (c "SCM_MAKE_INT(IbaAUTOPOLL)"))
+(define-constant IbaSC              (c "SCM_MAKE_INT(IbaSC)"))
+(define-constant IbaSRE             (c "SCM_MAKE_INT(IbaSRE)"))
+(define-constant IbaEOSrd           (c "SCM_MAKE_INT(IbaEOSrd)"))
+(define-constant IbaEOSwrt          (c "SCM_MAKE_INT(IbaEOSwrt)"))
+(define-constant IbaEOScmp          (c "SCM_MAKE_INT(IbaEOScmp)"))
+(define-constant IbaEOSchar         (c "SCM_MAKE_INT(IbaEOSchar)"))
+(define-constant IbaPP2             (c "SCM_MAKE_INT(IbaPP2)"))
+(define-constant IbaTIMING          (c "SCM_MAKE_INT(IbaTIMING)"))
+(define-constant IbaDMA             (c "SCM_MAKE_INT(IbaDMA)"))
+(define-constant IbaSendLLO         (c "SCM_MAKE_INT(IbaSendLLO)"))
+(define-constant IbaSPollTime       (c "SCM_MAKE_INT(IbaSPollTime)"))
+(define-constant IbaPPollTime       (c "SCM_MAKE_INT(IbaPPollTime)"))
+(define-constant IbaEndBitIsNormal  (c "SCM_MAKE_INT(IbaEndBitIsNormal)"))
+(define-constant IbaUnAddr          (c "SCM_MAKE_INT(IbaUnAddr)"))
+(define-constant IbaHSCableLength   (c "SCM_MAKE_INT(IbaHSCableLength)"))
+(define-constant IbaIst             (c "SCM_MAKE_INT(IbaIst)"))
+(define-constant IbaRsv             (c "SCM_MAKE_INT(IbaRsv)"))
+(define-constant IbaLON             (c "SCM_MAKE_INT(IbaLON)"))
+(define-constant IbaSerialNumber    (c "SCM_MAKE_INT(IbaSerialNumber)"))
+(define-constant IbaEOS             (c "SCM_MAKE_INT(IbaEOS)"))
+(define-constant IbaBNA             (c "SCM_MAKE_INT(IbaBNA)"))
+
+;;
+;;
+;;
+(define-constant NULLend            (c "SCM_MAKE_INT(NULLend)"))
+(define-constant NLend              (c "SCM_MAKE_INT(NLend)"))
+(define-constant DABend             (c "SCM_MAKE_INT(DABend)"))
+
+;;
+;;
+;;
+(define-constant STOPend            (c "SCM_MAKE_INT(STOPend)"))
+
+;;
+;;
+;;
+(define-constant NOADDR             (c "SCM_MAKE_INT(NOADDR)"))
+
+;;
+;;  iblines constants
+;;
+(define-constant ValidEOI           (c "SCM_MAKE_INT(ValidEOI)"))
+(define-constant ValidATN           (c "SCM_MAKE_INT(ValidATN)"))
+(define-constant ValidSRQ           (c "SCM_MAKE_INT(ValidSRQ)"))
+(define-constant ValidREN           (c "SCM_MAKE_INT(ValidREN)"))
+(define-constant ValidIFC           (c "SCM_MAKE_INT(ValidIFC)"))
+(define-constant ValidNRFD          (c "SCM_MAKE_INT(ValidNRFD)"))
+(define-constant ValidNDAC          (c "SCM_MAKE_INT(ValidNDAC)"))
+(define-constant ValidDAV           (c "SCM_MAKE_INT(ValidDAV)"))
+(define-constant BusEOI             (c "SCM_MAKE_INT(BusEOI)"))
+(define-constant BusATN             (c "SCM_MAKE_INT(BusATN)"))
+(define-constant BusSRQ             (c "SCM_MAKE_INT(BusSRQ)"))
+(define-constant BusREN             (c "SCM_MAKE_INT(BusREN)"))
+(define-constant BusIFC             (c "SCM_MAKE_INT(BusIFC)"))
+(define-constant BusNRFD            (c "SCM_MAKE_INT(BusNRFD)"))
+(define-constant BusNDAC            (c "SCM_MAKE_INT(BusNDAC)"))
+(define-constant BusDAV             (c "SCM_MAKE_INT(BusDAV)"))
+
 ;;;
 ;;; int  NI488CC ibfindA  (const char * udname);
-(define-cproc ibfindA (udname::<const-cstring>) ::<int>
-  (return (ibfindA udname)))
+(define-cproc ibfindA (udname::<const-cstring>) ::<int>  (return (ibfindA udname)))
 
 ;; Local variables:
 ;; mode: scheme
