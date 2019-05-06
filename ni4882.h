@@ -9,16 +9,16 @@
 #include <gauche.h>
 #include <gauche/extend.h>
 
+#if __APPLE__
+#include <NI4882/ni4882.h>
+#else
+#include \"ni4882.h\"
+#endif
+
 SCM_DECL_BEGIN
 
-/*
- * The following entry is a dummy one.
- * Replace it for your declarations.
- */
 
-extern ScmObj test_ni4882(void);
 
-/* Epilogue */
 SCM_DECL_END
 
 #endif  /* GAUCHE_NI4882_H */

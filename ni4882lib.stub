@@ -5,13 +5,10 @@
 "
 #include \"ni4882.h\"
 "
-
-;; The following entry is a dummy one.
-;; Replace it for your definitions.
-
-(define-cproc test-ni4882 () ::<const-cstring>
-  (result "ni4882 is working"))
-
+;;;
+;;; int  NI488CC ibfindA  (const char * udname);
+(define-cproc ibfindA (udname::<const-cstring>) ::<int>
+  (return (ibfindA udname)))
 
 ;; Local variables:
 ;; mode: scheme
