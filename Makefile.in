@@ -53,7 +53,7 @@ ni4882.$(SOEXT): $(ni4882_SRCS)
 
 check : all
 	@rm -f test.log
-	$(GOSH) -I. -I$(srcdir) $(srcdir)/test.scm > test.log
+	$(GOSH) -fload-verbose -I. -I$(srcdir) $(srcdir)/test.scm > test.log
 
 install : all
 	$(INSTALL) -m 444 -T $(GAUCHE_PKGINCDIR) $(HEADERS)
