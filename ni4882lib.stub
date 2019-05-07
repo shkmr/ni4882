@@ -208,9 +208,98 @@
 (define-constant BusNDAC            (c "SCM_MAKE_INT(BusNDAC)"))
 (define-constant BusDAV             (c "SCM_MAKE_INT(BusDAV)"))
 
-;;;
-;;; int  NI488CC ibfindA  (const char * udname);
+
+;; int  NI488CC ibfindA  (const char * udname);
 (define-cproc ibfindA (udname::<const-cstring>) ::<int>  (return (ibfindA udname)))
+
+;; unsigned int NI488CC ibrdfA   (int ud, const char * filename);
+(define-cproc ibrdfA  (ud::<int> filename::<const-cstring>) ::<uint>  (return (ibrdfA  ud filename)))
+
+;; unsigned int NI488CC ibwrtfA  (int ud, const char * filename);
+(define-cproc ibwrtfA (ud::<int> filename::<const-cstring>) ::<uint>  (return (ibwrtfA ud filename)))
+
+;; unsigned int NI488CC ibask    (int ud, int option, int * v);   XXX assumes sizeof(int) = 32bit
+(define-cproc ibask (ud::<int> option::<int> v::<s32vector>) ::<uint> (return (ibask ud option (SCM_UVECTOR_ELEMENTS v))))
+
+;; unsigned int NI488CC ibcac    (int ud, int v);
+(define-cproc ibcac (ud::<int> v::<int>) ::<uint> (return (ibcac ud v)))
+
+;; unsigned int NI488CC ibclr    (int ud);
+(define-cproc ibclr (ud::<int>) ::<uint> (return (ibclr ud)))
+
+;; unsigned int NI488CC ibcmd    (int ud, const void * buf, size_t cnt);    XXX check buf size!!
+(define-cproc ibcmd  (ud::<int> buf::<const-cstring> cnt::<ulong>) ::<uint> (return (ibcmd  ud buf cnt)))
+
+;; unsigned int NI488CC ibcmda   (int ud, const void * buf, size_t cnt);    XXX check buf size!!
+(define-cproc ibcmda (ud::<int> buf::<const-cstring> cnt::<ulong>) ::<uint> (return (ibcmda ud buf cnt)))
+
+;; unsigned int NI488CC ibconfig (int ud, int option, int v);
+(define-cproc ibconfig (ud::<int> option::<int> v::<int>) ::<uint> (return (ibconfig ud option v)))
+
+;; int  NI488CC ibdev    (int boardID, int pad, int sad, int tmo, int eot, int eos);
+(define-cproc ibdev (boardID::<int> pad::<int> sad::<int> tmo::<int> eot::<int> eos::<int>) ::<int> (return (ibdev boardID pad sad tmo eot eos)));
+
+;; unsigned int NI488CC ibexpert (int ud, int option, const void * Input, void * Output);
+;; no documentation found....
+
+;; unsigned int NI488CC ibgts    (int ud, int v);
+(define-cproc ibgts (ud::<int> v::<int>) ::<uint> (return (ibgts ud v)))
+
+;; unsigned int NI488CC iblck    (int ud, int v, unsigned int LockWaitTime, void * Reserved);
+;; no documentation found....
+
+;; unsigned int NI488CC iblines  (int ud, short * result);   XXX assumes sizeof(short) = 16bit
+(define-cproc iblines (ud::<int> result::<s16vector>) ::<uint> (return (iblines ud (SCM_UVECTOR_ELEMENTS result))))
+
+;; unsigned int NI488CC ibln     (int ud, int pad, int sad, short * listen);
+(define-cproc ibln (ud::<int> pad::<int> sad::<int> listen::<s16vector>) ::<uint> (return (ibln ud pad sad (SCM_UVECTOR_ELEMENTS listen))))
+
+;; unsigned int NI488CC ibloc    (int ud);
+(define-cproc ibloc (ud::<int>) ::<uint> (return (ibloc ud)))
+
+;; unsigned int NI488CC ibnotify (int ud, int mask, GpibNotifyCallback_t Callback, void * RefData);
+;; Later...
+
+;; unsigned int NI488CC ibonl    (int ud, int v);
+(define-cproc ibonl (ud::<int> v::<int>) ::<uint> (return (ibonl ud v)))
+
+;; unsigned int NI488CC ibpct    (int ud);
+(define-cproc ibpct (ud::<int>) ::<uint> (return (ibpct ud)))
+
+;; unsigned int NI488CC ibppc    (int ud, int v);
+(define-cproc ibppc (ud::<int> v::<int>) ::<uint> (return (ibppc ud v)))
+
+;; unsigned int NI488CC ibrd     (int ud, void * buf, size_t cnt);   XXX check buf size!!
+(define-cproc ibrd  (ud::<int> buf::<s8vector> cnt::<ulong>) ::<uint> (return (ibrd ud (SCM_UVECTOR_ELEMENTS buf) cnt)))
+
+;; unsigned int NI488CC ibrda    (int ud, void * buf, size_t cnt);   XXX  check buf size!!
+(define-cproc ibrda (ud::<int> buf::<s8vector> cnt::<ulong>) ::<uint> (return (ibrda ud (SCM_UVECTOR_ELEMENTS buf) cnt)))
+
+;; unsigned int NI488CC ibrpp    (int ud, char * ppr);
+(define-cproc ibrpp (ud::<int> ppr::<s8vector>) ::<uint> (return (ibrpp ud (SCM_UVECTOR_ELEMENTS ppr))))
+
+;; unsigned int NI488CC ibrsp    (int ud, char * spr);
+(define-cproc ibrsp (ud::<int> spr::<s8vector>) ::<uint> (return (ibrsp ud (SCM_UVECTOR_ELEMENTS spr))))
+
+;; unsigned int NI488CC ibsic    (int ud);
+(define-cproc ibsic (ud::<int>) ::<uint> (return (ibsic ud)))
+
+;; unsigned int NI488CC ibstop   (int ud);
+(define-cproc ibstop (ud::<int>) ::<uint> (return (ibstop ud)))
+
+;; unsigned int NI488CC ibtrg    (int ud);
+(define-cproc ibtrg (ud::<int>) ::<uint> (return (ibtrg ud)))
+
+;;unsigned int NI488CC ibwait   (int ud, int mask);
+(define-cproc ibwait (ud::<int> mask::<int>) ::<uint> (return (ibwait ud mask)))
+
+;; unsigned int NI488CC ibwrt    (int ud, const void * buf, size_t cnt);
+(define-cproc ibwrt (ud::<int> buf::<s8vector> cnt::<ulong>) ::<uint> (return (ibwrt ud (SCM_UVECTOR_ELEMENTS buf) cnt)))
+
+
+;; unsigned int NI488CC ibwrta   (int ud, const void * buf, size_t cnt);
+(define-cproc ibwrta (ud::<int> buf::<s8vector> cnt::<ulong>) ::<uint> (return (ibwrta ud (SCM_UVECTOR_ELEMENTS buf) cnt)))
+
 
 ;; Local variables:
 ;; mode: scheme
