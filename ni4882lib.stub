@@ -1,7 +1,6 @@
 ;;;
 ;;; ni4882lib.stub
 ;;;
-
 "
 #include \"ni4882.h\"
 "
