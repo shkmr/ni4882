@@ -300,6 +300,14 @@
 ;; unsigned int NI488CC ibwrta   (int ud, const void * buf, size_t cnt);
 (define-cproc ibwrta (ud::<int> buf::<s8vector> cnt::<ulong>) ::<uint> (return (ibwrta ud (SCM_UVECTOR_ELEMENTS buf) cnt)))
 
+;; unsigned int NI488CC Ibsta(void);
+(define-cproc Ibsta () ::<uint> (return (Ibsta)))
+
+;; unsigned int NI488CC Iberr(void);
+(define-cproc Iberr () ::<uint> (return (Iberr)))
+
+;; unsigned int NI488CC Ibcnt(void);
+(define-cproc Ibcnt () ::<uint> (return (Ibcnt)))
 
 ;; Local variables:
 ;; mode: scheme
