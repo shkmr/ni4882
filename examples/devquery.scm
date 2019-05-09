@@ -1,17 +1,17 @@
 ;;;
-;;;   Derived from ``devquery.c'' in NI-488.2 package.
+;;;   Derived from ``Sample/devquery.c'' in NI-488.2 package.
 ;;;
 (use ni4882)
 (use gauche.uvector)
 
 (define Device     0)
 (define BoardIndex 0)
-	
+
 (define (main args)
-  (let ((PrimaryAddress 3)            
-        (SecondaryAddress 0)          
+  (let ((PrimaryAddress 3)
+        (SecondaryAddress 0)
         (Buffer (make-s8vector 101 0))
-        (RetVal  0))                  
+        (RetVal  0))
 
     (set! Device (ibdev BoardIndex PrimaryAddress SecondaryAddress T10s 1 0))
     (if (= Device -1)
@@ -20,7 +20,7 @@
     (set! RetVal (ibclr Device))
     (if (logand RetVal ERR)
       (GpibError "ibclr Error"))
-    
+
     (print "Sending string to instrument.")
 
     (set! RetVal (ibwrt Device (string->s8vector "*IDN?") 5))
@@ -33,12 +33,11 @@
     (s8vector-set! Buffer (Ibcnt) 0)
 
     (print #`"Response from instrument: ,(s8vector->string Buffer)")
-	
+
     (set! RetVal (ibonl Device 0))
     (if (logand RetVal ERR)
       (GpibError "ibonl Error"))
     0))
-
 
 (define (GpibError msg)
   (let ((Status (Ibsta))
@@ -90,4 +89,3 @@
     (format  #t "ibcnt = ~d~%" Count)
     (ibonl Device 0)
     (exit 1)))
-
