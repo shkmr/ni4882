@@ -1,0 +1,93 @@
+;;;
+;;;   Derived from ``devquery.c'' in NI-488.2 package.
+;;;
+(use ni4882)
+(use gauche.uvector)
+
+(define Device     0)
+(define BoardIndex 0)
+	
+(define (main args)
+  (let ((PrimaryAddress 3)            
+        (SecondaryAddress 0)          
+        (Buffer (make-s8vector 101 0))
+        (RetVal  0))                  
+
+    (set! Device (ibdev BoardIndex PrimaryAddress SecondaryAddress T10s 1 0))
+    (if (= Device -1)
+      (GpibError "ibdev Error"))
+
+    (set! RetVal (ibclr Device))
+    (if (logand RetVal ERR)
+      (GpibError "ibclr Error"))
+    
+    (print "Sending string to instrument.")
+
+    (set! RetVal (ibwrt Device (string->s8vector "*IDN?") 5))
+    (if (logand RetVal ERR)
+      (GpibError "ibwrt Error"))
+    (set! RetVal (ibrd Device Buffer 100))
+    (if (logand RetVal ERR)
+      (GpibError "ibrd Error"))
+
+    (s8vector-set! Buffer (Ibcnt) 0)
+
+    (print #`"Response from instrument: ,(s8vector->string Buffer)")
+	
+    (set! RetVal (ibonl Device 0))
+    (if (logand RetVal ERR)
+      (GpibError "ibonl Error"))
+    0))
+
+
+(define (GpibError msg)
+  (let ((Status (Ibsta))
+        (Error  (Iberr))
+        (Count  (Ibcnt)))
+    (print msg)
+    (format #t "ibsta = &H~2,'0X  <" Status)
+    (display (cond ((not (zero? (logand Status ERR)))  " ERR")
+                   ((not (zero? (logand Status TIMO))) " TIMO")
+                   ((not (zero? (logand Status END)))  " END")
+                   ((not (zero? (logand Status SRQI))) " SRQI")
+                   ((not (zero? (logand Status RQS)))  " RQS")
+                   ((not (zero? (logand Status CMPL))) " CMPL")
+                   ((not (zero? (logand Status LOK)))  " LOK")
+                   ((not (zero? (logand Status REM)))  " REM")
+                   ((not (zero? (logand Status CIC)))  " CIC")
+                   ((not (zero? (logand Status ATN)))  " ATN")
+                   ((not (zero? (logand Status TACS))) " TACS")
+                   ((not (zero? (logand Status LACS))) " LACS")
+                   ((not (zero? (logand Status DTAS))) " DTAS")
+                   ((not (zero? (logand Status DCAS))) " DCAS")
+                   (else "unknown")))
+    (print " >")
+    (format #t "iberr = ~d" Error)
+    (print
+     (case Error
+       ((EDVR) " EDVR <Driver error>")
+       ((ECIC) " ECIC <Not Controller-In-Charge>")
+       ((ENOL) " ENOL <No Listener>")
+       ((EADR) " EADR <Address error>")
+       ((EARG) " EARG <Invalid argument>")
+       ((ESAC) " ESAC <Not System Controller>")
+       ((EABO) " EABO <Operation aborted>")
+       ((ENEB) " ENEB <No GPIB board>")
+       ((EDMA) " EDMA <DMA error>")
+       ((EOIP) " EOIP <Async I/O in progress>")
+       ((ECAP) " ECAP <No capability>")
+       ((EFSO) " EFSO <File system error>")
+       ((EBUS) " EBUS <Command error>")
+       ((ESRQ) " ESRQ <SRQ stuck on>")
+       ((ETAB) " ETAB <Table Overflow>")
+       ((ELCK) " ELCK <Interface is locked>")
+       ((EARM) " EARM <ibnotify callback failed to rearm>")
+       ((EHDL) " EHDL <Input handle is invalid>")
+       ((EWIP) " EWIP <Wait in progress on specified input handle>")
+       ((ERST) " ERST <The event notification was cancelled due to a reset of the interface>")
+       ((EPWR) " EPWR <The interface lost power>")
+       (else   " Unknown error")))
+    (format  #t "ibcnt = ~d~%" Count)
+    (ibonl Device 0)
+    (exit 1)))
+
