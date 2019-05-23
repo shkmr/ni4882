@@ -23,5 +23,7 @@
 (define-inline (ibsre ud v) (ibconfig ud IbcSRE v))
 (define-inline (ibtmo ud v) (ibconfig ud IbcTMO v))
 
+(define (GetPAD val) (bit-field val 0 7))
+(define (GetSAD val) (bit-field val 8 15))
 
 ;;; EOF
