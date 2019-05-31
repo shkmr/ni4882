@@ -398,7 +398,21 @@
   (RcvRespMsg boardID (SCM_UVECTOR_ELEMENTS buffer) cnt Termination))
 
 ;; void NI488CC ReadStatusByte (int boardID, Addr4882_t addr, short * result);
+(define-cproc ReadStatusByte ( boardID::<int>
+                               addr::<short>
+                               result::<s16vector> )
+              ::<void>
+  (ReadStatusByte boardID addr (SCM_UVECTOR_ELEMENTS result)))
+
 ;; void NI488CC Receive        (int boardID, Addr4882_t addr, void * buffer, size_t cnt, int Termination);
+(define-cproc Receive ( boardID::<int>
+                        addr::<short>
+                        buffer::<s8vector>
+                        cnt::<ulong>
+                        Termination::<int> )
+              ::<void>
+  (Receive boardID addr (SCM_UVECTOR_ELEMENTS buffer) cnt Termination))
+
 ;; void NI488CC ReceiveSetup   (int boardID, Addr4882_t addr);
 ;; void NI488CC ResetSys       (int boardID, const Addr4882_t * addrlist);
 ;; void NI488CC Send           (int boardID, Addr4882_t addr, const void * databuf, size_t datacnt, int eotMode);
