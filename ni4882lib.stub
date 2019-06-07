@@ -414,21 +414,100 @@
   (Receive boardID addr (SCM_UVECTOR_ELEMENTS buffer) cnt Termination))
 
 ;; void NI488CC ReceiveSetup   (int boardID, Addr4882_t addr);
-;; void NI488CC ResetSys       (int boardID, const Addr4882_t * addrlist);
-;; void NI488CC Send           (int boardID, Addr4882_t addr, const void * databuf, size_t datacnt, int eotMode);
-;; void NI488CC SendCmds       (int boardID, const void * buffer, size_t cnt);
-;; void NI488CC SendDataBytes  (int boardID, const void * buffer, size_t cnt, int eot_mode);
-;; void NI488CC SendIFC        (int boardID);
-;; void NI488CC SendLLO        (int boardID);
-;; void NI488CC SendList       (int boardID, const Addr4882_t * addrlist, const void * databuf, size_t datacnt, int eotMode);
-;; void NI488CC SendSetup      (int boardID, const Addr4882_t * addrlist);
-;; void NI488CC SetRWLS        (int boardID, const Addr4882_t * addrlist);
-;; void NI488CC TestSRQ        (int boardID, short * result);
-;; void NI488CC TestSys        (int boardID, const Addr4882_t * addrlist, short * results);
-;; void NI488CC Trigger        (int boardID, Addr4882_t addr);
-;; void NI488CC TriggerList    (int boardID, const Addr4882_t * addrlist);
-;; void NI488CC WaitSRQ        (int boardID, short * result);
+(define-cproc ReceiveSetup ( boardID::<int>
+                             addr::<short> )
+              ::<void>
+  (ReceiveSetup boardID addr))
 
+;; void NI488CC ResetSys       (int boardID, const Addr4882_t * addrlist);
+(define-cproc ResetSys ( boardID::<int>
+                         addrlist::<s16vector> )
+              ::<void>
+  (ResetSys boardID (SCM_UVECTOR_ELEMENTS addrlist)))
+
+;; void NI488CC Send           (int boardID, Addr4882_t addr, const void * databuf, size_t datacnt, int eotMode);
+(define-cproc Send ( boardID::<int>
+                     addr::<short>
+                     databuf::<u8vector>
+                     datacnt::<ulong>
+                     eotMode::<int> )
+              ::<void>
+  (Send boardID addr (SCM_UVECTOR_ELEMENTS databuf) datacnt eotMode))
+
+;; void NI488CC SendCmds       (int boardID, const void * buffer, size_t cnt);
+(define-cproc SendCmds ( boardID::<int>
+                         buffer::<u8vector>
+                         cnt::<ulong> )
+              ::<void>
+  (SendCmds boardID (SCM_UVECTOR_ELEMENTS buffer) cnt))
+
+;; void NI488CC SendDataBytes  (int boardID, const void * buffer, size_t cnt, int eot_mode);
+(define-cproc SendDataBytes ( boardID::<int>
+                              buffer::<u8vector>
+                              cnt::<ulong>
+                              eot_mode::<int> )
+              ::<void>
+  (SendDataBytes boardID (SCM_UVECTOR_ELEMENTS buffer) cnt eot_mode))
+
+;; void NI488CC SendIFC        (int boardID);
+(define-cproc SendIFC ( boardID::<int> ) ::<void> (SendIFC boardID))
+
+;; void NI488CC SendLLO        (int boardID);
+(define-cproc SendLLO ( boardID::<int> ) ::<void> (SendLLO boardID))
+
+;; void NI488CC SendList       (int boardID, const Addr4882_t * addrlist, const void * databuf, size_t datacnt, int eotMode);
+(define-cproc SendList ( boardID::<int>
+                         addrlist::<s16vector>
+                         databuf::<u8vector>
+                         datacnt::<ulong>
+                         eotMode::<int> )
+              ::<void>
+  (SendList boardID (SCM_UVECTOR_ELEMENTS addrlist) (SCM_UVECTOR_ELEMENTS databuf) datacnt eotMode))
+
+;; void NI488CC SendSetup      (int boardID, const Addr4882_t * addrlist);
+(define-cproc SendSetup ( boardID::<int>
+                          addrlist::<s16vector> )
+              ::<void>
+  (SendSetup boardID (SCM_UVECTOR_ELEMENTS addrlist)))
+
+;; void NI488CC SetRWLS        (int boardID, const Addr4882_t * addrlist);
+(define-cproc SendRWLS ( boardID::<int>
+                         addrlist::<s16vector> )
+              ::<void>
+  (SetRWLS boardID (SCM_UVECTOR_ELEMENTS addrlist)))
+
+;; void NI488CC TestSRQ        (int boardID, short * result);
+(define-cproc TestSRQ ( boardID::<int>
+                        result::<s16vector> )
+              ::<void>
+  (TestSRQ boardID (SCM_UVECTOR_ELEMENTS result)))
+
+;; void NI488CC TestSys        (int boardID, const Addr4882_t * addrlist, short * results);
+(define-cproc TestSys ( boardID::<int>
+                        addrlist::<s16vector>
+                        results::<s16vector> )
+              ::<void>
+  (TestSys boardID
+           (SCM_UVECTOR_ELEMENTS addrlist)
+           (SCM_UVECTOR_ELEMENTS results)))
+
+;; void NI488CC Trigger        (int boardID, Addr4882_t addr);
+(define-cproc Trigger ( boardID::<int>
+                        addr::<short> )
+              ::<void>
+  (Trigger boardID addr))
+
+;; void NI488CC TriggerList    (int boardID, const Addr4882_t * addrlist);
+(define-cproc TriggerList ( boardID::<int>
+                            addrlist::<s16vector> )
+              ::<void>
+  (TriggerList boardID (SCM_UVECTOR_ELEMENTS addrlist)))
+
+;; void NI488CC WaitSRQ        (int boardID, short * result);
+(define-cproc WaitSRQ ( boardID::<int>
+                        result::<s16vector> )
+              ::<void>
+  (WaitSRQ boardID (SCM_UVECTOR_ELEMENTS result)))
 
 ;; Local variables:
 ;; mode: scheme
