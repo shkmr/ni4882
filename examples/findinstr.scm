@@ -96,7 +96,6 @@
   (ibonl GPIB0 0)
   0)
 
-
 (define (GpibError msg)
   (let ((Status (Ibsta))
         (Error  (Iberr))
