@@ -1,0 +1,167 @@
+#! /usr/bin/env gosh
+;;; -*- Scheme -*-
+(use ni4882)
+(use gauche.uvector)
+
+(define debug? #f)
+(define (p x)  (if debug? (print x)))
+
+(define (GpibError msg)
+  (print msg)
+  (format #t "ibsta = 0x~2,'0X  <" (Ibsta))
+  (display (if (not (zero? (logand (Ibsta) ERR)))  " ERR"   ""))
+  (display (if (not (zero? (logand (Ibsta) TIMO))) " TIMO"  ""))
+  (display (if (not (zero? (logand (Ibsta) END)))  " END"   ""))
+  (display (if (not (zero? (logand (Ibsta) SRQI))) " SRQI"  ""))
+  (display (if (not (zero? (logand (Ibsta) RQS)))  " RQS"   ""))
+  (display (if (not (zero? (logand (Ibsta) CMPL))) " CMPL"  ""))
+  (display (if (not (zero? (logand (Ibsta) LOK)))  " LOK"   ""))
+  (display (if (not (zero? (logand (Ibsta) REM)))  " REM"   ""))
+  (display (if (not (zero? (logand (Ibsta) CIC)))  " CIC"   ""))
+  (display (if (not (zero? (logand (Ibsta) ATN)))  " ATN"   ""))
+  (display (if (not (zero? (logand (Ibsta) TACS))) " TACS"  ""))
+  (display (if (not (zero? (logand (Ibsta) LACS))) " LACS"  ""))
+  (display (if (not (zero? (logand (Ibsta) DTAS))) " DTAS"  ""))
+  (display (if (not (zero? (logand (Ibsta) DCAS))) " DCAS"  ""))
+  (print " >")
+  (format #t "iberr = ~d" (Iberr))
+  (print (cond ((= (Iberr) EDVR) " EDVR <Driver error>")
+               ((= (Iberr) ECIC) " ECIC <Not Controller-In-Charge>")
+               ((= (Iberr) ENOL) " ENOL <No Listener>")
+               ((= (Iberr) EADR) " EADR <Address error>")
+               ((= (Iberr) EARG) " EARG <Invalid argument>")
+               ((= (Iberr) ESAC) " ESAC <Not System Controller>")
+               ((= (Iberr) EABO) " EABO <Operation aborted>")
+               ((= (Iberr) ENEB) " ENEB <No GPIB board>")
+               ((= (Iberr) EDMA) " EDMA <DMA error>")
+               ((= (Iberr) EOIP) " EOIP <Async I/O in progress>")
+               ((= (Iberr) ECAP) " ECAP <No capability>")
+               ((= (Iberr) EFSO) " EFSO <File system error>")
+               ((= (Iberr) EBUS) " EBUS <Command error>")
+               ((= (Iberr) ESRQ) " ESRQ <SRQ stuck on>")
+               ((= (Iberr) ETAB) " ETAB <Table Overflow>")
+               ((= (Iberr) ELCK) " ELCK <Interface is locked>")
+               ((= (Iberr) EARM) " EARM <ibnotify callback failed to rearm>")
+               ((= (Iberr) EHDL) " EHDL <Input handle is invalid>")
+               ((= (Iberr) EWIP) " EWIP <Wait in progress on specified input handle>")
+               ((= (Iberr) ERST) " ERST <The event notification was cancelled due to a reset of the interface>")
+               ((= (Iberr) EPWR) " EPWR <The interface lost power>")
+               (else             " Unknown error")))
+  (format  #t "ibcnt = ~d~%" (Ibcnt))
+  #;(ibonl dev 0)
+  (exit 1))
+
+(define (sta)  (format #f "0x~4,'0x" (Ibsta)))
+(define (ck ib)
+  (p #"~|ib|=~(sta)")
+  (if (not (zero? (logand (Ibsta) ERR)))
+    (GpibError #"~|ib| error"))
+  0)
+
+(define board 0)  ; default interface. /dev/gpib<board>.
+
+(define (print-idn pad sad)
+  (let ((buf (make-u8vector 1024 0))
+        (dev (ibdev board pad sad T300ms 1 0)))
+
+    (if (= dev -1) (GpibError "ibdev Error"))
+    (ibclr dev)
+    (ck "(ibclr)")
+    (ibwrt dev (string->u8vector "*IDN?"))
+    (ck "(ibwrt)")
+    (ibrd dev buf)
+    (ck "(ibrd)")
+    #;(print buf)
+    (u8vector-set! buf (Ibcnt) 0)
+    (let ((t (- (Ibcnt) 1)))
+      (if (= #x0a (u8vector-ref buf t))
+        (u8vector-set! buf t 0)))
+    (print #"~|pad| ~|sad| : \"~(u8vector->string buf 0 1024 0)\"")
+    (ibonl dev 0)
+    (ck "(ibonl)")
+    0))
+
+(define (listdev)
+  (let ((iaddr #s16(1  2  3  4  5  6  7  8  9 10
+                   11 12 13 14 15 16 17 18 19 20
+                   21 22 23 24 25 26 27 28 29 30
+                   -1))
+        (oaddr (make-s16vector 32 0)))
+    (SendIFC board)
+    (ck "(SendIFC)")
+    (FindLstn board iaddr oaddr 31)
+    (ck "(FindLstn)")
+    (let ((ndev (Ibcnt)))
+      (if (> ndev 30)
+        (error "ibcnt > 30"))
+      (do ((i 0 (+ i 1)))
+          ((>= i ndev) #t)
+        (let ((pad (GetPAD (uvector-ref oaddr i)))
+              (sad (GetSAD (uvector-ref oaddr i))))
+          (print-idn pad sad)))
+      0)))
+
+(define (wrt pad sad str)
+  (let ((dev (ibdev board pad sad T300ms 1 0)))
+    (if (= dev -1) (GpibError "ibdev Error"))
+    (ibwrt dev (string->u8vector str))
+    (ck "(ibwrt)")
+    (ibonl dev 0)
+    (ck "(ibonl)")
+    0))
+
+(define (wrtrd pad sad str)
+  (let ((buf (make-u8vector 128 0))
+        (dev (ibdev board pad sad T300ms 1 0)))
+    (if (= dev -1) (GpibError "ibdev Error"))
+    (ibwrt dev (string->u8vector str))
+    (ck "(ibwrt)")
+    (ibrd dev buf)
+    (ck "(ibrd)")
+    (let ((n (Ibcnt)))
+      (u8vector-set! buf n 0)
+      (if (= #x0a (u8vector-ref buf (- n 1)))
+        (u8vector-set! buf (- n 1) 0)))
+    (print (u8vector->string buf))
+    (ibonl dev 0)
+    (ck "(ibonl)")
+    0))
+
+(define (print-usage)
+  (print "Usage:
+
+    gpib listdev                        --  lists devices on GPIB bus.
+    gpib wrt pad sad message            --  write message at pad sad.
+    gpib wrtrd pad sad message          --  write message then read response.
+
+Examples:
+
+  To get error string from GPIB device 5.
+
+    gpib wrtrd 5 0 \"SYST:ERR?\"
+
+  To send reset and clear status to device 5.
+
+    gpib wrt   5 0 \"*RST; *CLS\"
+
+  Send \"*RST; *CLS\" to devices 5--8 at once.
+    
+    for i in 5 6 7 8; do gpib wrt $i 0 \"*RST: *CLS\"; done
+"))
+
+(define (main args)
+  (if (> (length args) 1)
+    (let ((cmd (list-ref args 1)))
+      (cond ((string=? cmd "listdev") (listdev))
+            ((string=? cmd "wrt")
+             (wrt (string->number (list-ref args 2))
+                  (string->number (list-ref args 3))
+                  (list-ref args 4)))
+            ((string=? cmd "wrtrd")
+             (wrtrd (string->number (list-ref args 2))
+                    (string->number (list-ref args 3))
+                    (list-ref args 4)))
+            (else (error #"Unknown command: \"~|cmd|\""))))
+    (print-usage)))
+
+;; EOF
