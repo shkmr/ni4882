@@ -17,17 +17,14 @@
 
 (unless (cf-have-subst? 'NI4882CFLAGS)
   (rxmatch-case (gauche-architecture)
-    (#/-darwin(\d+)\./ (#f major)
-      (cf-subst 'NI4882CFLAGS "-F /Library/Frameworks"))))
+    (#/-linux/         (#f)       (cf-subst 'NI4882CFLAGS "-Wall -I /local/bench/include"))
+    (#/-darwin(\d+)\./ (#f major) (cf-subst 'NI4882CFLAGS "-F /Library/Frameworks"))))
 
 (unless (cf-have-subst? 'NI4882LIBS)
   (rxmatch-case (gauche-architecture)
-    (#/-darwin(\d+)\./ (#f major)
-      (cf-subst 'NI4882LIBS "-F /Library/Frameworks -framework NI4882"))
-    (#/-linux/ (#f)
-      (cf-subst 'NI4882LIBS "libni4882.a"))
-    (else
-      (cf-subst 'NI4882LIBS "-lni4882"))))
+    (#/-linux/         (#f)       (cf-subst 'NI4882LIBS "-Wl,-rpath /local/bench/lib -L /local/bench/lib -lgpib"))
+    (#/-darwin(\d+)\./ (#f major) (cf-subst 'NI4882LIBS "-F /Library/Frameworks -framework NI4882"))
+    (else                         (cf-subst 'NI4882LIBS "-lni4882"))))
 
 
 ;; Output

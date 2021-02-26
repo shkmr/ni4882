@@ -1,15 +1,27 @@
+;;;
+;;;
+;;;
+
 (use ni4882)
 (use gauche.uvector)
 
-(define-constant GPIB0 0)        ; Board index
+(define debug? #f)
+(define (p x)  (if debug? (print x)))
 
+(define (sta)  (format #f "0x~4,'0x" (Ibsta)))
+(define (ck ib)
+  (p #"~|ib|=~(sta)")
+  (if (not (zero? (logand (Ibsta) ERR)))
+    (GpibError #"~|ib| error")))
+
+
+(define-constant GPIB0 0)        ; Board index
 (define Num_Instruments 0)       ; Number of instruments on GPIB
 (define PAD             0)       ; Primary address
 (define SAD             0)       ; Secondary address
 (define loop            0)       ; Loop counter
 (define Instruments (make-s16vector 32 0))
-(define Resul       (make-s16vector 32 0))
-
+(define Result      (make-s16vector 32 0))
 
 (define (main args)
   ;;
@@ -19,8 +31,7 @@
   ;; GpibError with an error message.
   ;;
   (SendIFC GPIB0)
-  (if (logand (Ibsta) ERR)
-    (GpibError "SendIFC error"))
+  (ck "(SendIFC)")
 
   ;;
   ;;  Create an array containing all valid GPIB primary addresses,
@@ -31,8 +42,8 @@
   ;;
   (do ((i 0 (+ i 1)))
       ((= i 30) #t)
-    (vector-set! Instruments i (+ i 1)))
-  (vector-set! Instruments 30 NOADDR)
+    (uvector-set! Instruments i (+ i 1)))
+  (uvector-set! Instruments 30 -1)
 
   ;;
   ;;  Print message to tell user that the program is searching for all
@@ -42,12 +53,10 @@
   ;;  order for FindLstn to detect them. If the error bit ERR is set in
   ;;  ibsta, call GpibError with an error message.
   ;;
-  (print "Finding all instruments on the bus...\n")
+  (p "Finding all instruments on the bus...\n")
 
   (FindLstn GPIB0 Instruments Result 31)
-
-  (if (logand (Ibsta) ERR)
-    (GpibError "SFindLstn error"))
+  (ck "(FindLstn)")
 
   ;;
   ;;  Ibcnt() returns the actual number of addresses stored in the
@@ -55,14 +64,14 @@
   ;;  Num_Instruments. Print the number of instruments found.
   ;;
   (set! Num_Instruments (Ibcnt))
-  (print #`"Number of instruments found = ,|Num_Instruments|\n")
+  (p #"Number of instruments found = ~|Num_Instruments|\n")
 
   ;;
   ;;  The Result array contains the addresses of all the instruments
   ;;  found by FindLstn. Use the constant NOADDR, as defined in
   ;;  NI488.H, to signify the end of the array.
   ;;
-  (vector-set! Result Num_Instruments NOADDR)
+  (uvector-set! Result Num_Instruments -1)
 
   ;;
   ;;  Print out each instrument's PAD and SAD, one at a time.
@@ -90,59 +99,53 @@
     ;;
     (set! SAD (GetSAD (uvector-ref Result i)))
     (if (= SAD NO_SAD)
-      (print #`"The instrument at Result[,|i|]: PAD = ,|PAD| SAD = NONE")
-      (print #`"The instrument at Result[,|i|]: PAD = ,|PAD| SAD = ,|SAD|")))
+      (print #"The instrument at Result[~|i|]: PAD = ~|PAD| SAD = NONE")
+      (print #"The instrument at Result[~|i|]: PAD = ~|PAD| SAD = ~|SAD|")))
 
-  (ibonl GPIB0 0)
+  ;(ibonl GPIB0 0)
   0)
 
 (define (GpibError msg)
-  (let ((Status (Ibsta))
-        (Error  (Iberr))
-        (Count  (Ibcnt)))
-    (print msg)
-    (format #t "ibsta = &H~2,'0X  <" Status)
-    (display (cond ((not (zero? (logand Status ERR)))  " ERR")
-                   ((not (zero? (logand Status TIMO))) " TIMO")
-                   ((not (zero? (logand Status END)))  " END")
-                   ((not (zero? (logand Status SRQI))) " SRQI")
-                   ((not (zero? (logand Status RQS)))  " RQS")
-                   ((not (zero? (logand Status CMPL))) " CMPL")
-                   ((not (zero? (logand Status LOK)))  " LOK")
-                   ((not (zero? (logand Status REM)))  " REM")
-                   ((not (zero? (logand Status CIC)))  " CIC")
-                   ((not (zero? (logand Status ATN)))  " ATN")
-                   ((not (zero? (logand Status TACS))) " TACS")
-                   ((not (zero? (logand Status LACS))) " LACS")
-                   ((not (zero? (logand Status DTAS))) " DTAS")
-                   ((not (zero? (logand Status DCAS))) " DCAS")
-                   (else "unknown")))
-    (print " >")
-    (format #t "iberr = ~d" Error)
-    (print
-     (case Error
-       ((EDVR) " EDVR <Driver error>")
-       ((ECIC) " ECIC <Not Controller-In-Charge>")
-       ((ENOL) " ENOL <No Listener>")
-       ((EADR) " EADR <Address error>")
-       ((EARG) " EARG <Invalid argument>")
-       ((ESAC) " ESAC <Not System Controller>")
-       ((EABO) " EABO <Operation aborted>")
-       ((ENEB) " ENEB <No GPIB board>")
-       ((EDMA) " EDMA <DMA error>")
-       ((EOIP) " EOIP <Async I/O in progress>")
-       ((ECAP) " ECAP <No capability>")
-       ((EFSO) " EFSO <File system error>")
-       ((EBUS) " EBUS <Command error>")
-       ((ESRQ) " ESRQ <SRQ stuck on>")
-       ((ETAB) " ETAB <Table Overflow>")
-       ((ELCK) " ELCK <Interface is locked>")
-       ((EARM) " EARM <ibnotify callback failed to rearm>")
-       ((EHDL) " EHDL <Input handle is invalid>")
-       ((EWIP) " EWIP <Wait in progress on specified input handle>")
-       ((ERST) " ERST <The event notification was cancelled due to a reset of the interface>")
-       ((EPWR) " EPWR <The interface lost power>")
-       (else   " Unknown error")))
-    (format  #t "ibcnt = ~d~%" Count)
-    (ibonl Device 0)
-    (exit 1)))
+  (print msg)
+  (format #t "ibsta = 0x~2,'0X  <" (Ibsta))
+  (display (if (not (zero? (logand (Ibsta) ERR)))  " ERR"   ""))
+  (display (if (not (zero? (logand (Ibsta) TIMO))) " TIMO"  ""))
+  (display (if (not (zero? (logand (Ibsta) END)))  " END"   ""))
+  (display (if (not (zero? (logand (Ibsta) SRQI))) " SRQI"  ""))
+  (display (if (not (zero? (logand (Ibsta) RQS)))  " RQS"   ""))
+  (display (if (not (zero? (logand (Ibsta) CMPL))) " CMPL"  ""))
+  (display (if (not (zero? (logand (Ibsta) LOK)))  " LOK"   ""))
+  (display (if (not (zero? (logand (Ibsta) REM)))  " REM"   ""))
+  (display (if (not (zero? (logand (Ibsta) CIC)))  " CIC"   ""))
+  (display (if (not (zero? (logand (Ibsta) ATN)))  " ATN"   ""))
+  (display (if (not (zero? (logand (Ibsta) TACS))) " TACS"  ""))
+  (display (if (not (zero? (logand (Ibsta) LACS))) " LACS"  ""))
+  (display (if (not (zero? (logand (Ibsta) DTAS))) " DTAS"  ""))
+  (display (if (not (zero? (logand (Ibsta) DCAS))) " DCAS"  ""))
+  (print " >")
+  (format #t "iberr = ~d" (Iberr))
+  (print (cond ((= (Iberr) EDVR) " EDVR <Driver error>")
+               ((= (Iberr) ECIC) " ECIC <Not Controller-In-Charge>")
+               ((= (Iberr) ENOL) " ENOL <No Listener>")
+               ((= (Iberr) EADR) " EADR <Address error>")
+               ((= (Iberr) EARG) " EARG <Invalid argument>")
+               ((= (Iberr) ESAC) " ESAC <Not System Controller>")
+               ((= (Iberr) EABO) " EABO <Operation aborted>")
+               ((= (Iberr) ENEB) " ENEB <No GPIB board>")
+               ((= (Iberr) EDMA) " EDMA <DMA error>")
+               ((= (Iberr) EOIP) " EOIP <Async I/O in progress>")
+               ((= (Iberr) ECAP) " ECAP <No capability>")
+               ((= (Iberr) EFSO) " EFSO <File system error>")
+               ((= (Iberr) EBUS) " EBUS <Command error>")
+               ((= (Iberr) ESRQ) " ESRQ <SRQ stuck on>")
+               ((= (Iberr) ETAB) " ETAB <Table Overflow>")
+               ((= (Iberr) ELCK) " ELCK <Interface is locked>")
+               ((= (Iberr) EARM) " EARM <ibnotify callback failed to rearm>")
+               ((= (Iberr) EHDL) " EHDL <Input handle is invalid>")
+               ((= (Iberr) EWIP) " EWIP <Wait in progress on specified input handle>")
+               ((= (Iberr) ERST) " ERST <The event notification was cancelled due to a reset of the interface>")
+               ((= (Iberr) EPWR) " EPWR <The interface lost power>")
+               (else             " Unknown error")))
+  (format  #t "ibcnt = ~d~%" (Ibcnt))
+  #;(ibonl dev 0)
+  (exit 1))

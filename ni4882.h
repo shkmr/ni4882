@@ -12,7 +12,8 @@
 #if __APPLE__
 #include <NI4882/ni4882.h>
 #else
-#include \"ni4882.h\"
+/* Use linux gpib */
+#include "gpib/ib.h"
 #endif
 
 SCM_DECL_BEGIN

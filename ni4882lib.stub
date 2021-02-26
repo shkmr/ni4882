@@ -60,18 +60,22 @@
 (define-constant ESTB (c "SCM_MAKE_INT(ESTB)"))
 (define-constant ESRQ (c "SCM_MAKE_INT(ESRQ)"))
 (define-constant ETAB (c "SCM_MAKE_INT(ETAB)"))
-(define-constant ELCK (c "SCM_MAKE_INT(ELCK)"))
-(define-constant EARM (c "SCM_MAKE_INT(EARM)"))
-(define-constant EHDL (c "SCM_MAKE_INT(EHDL)"))
-(define-constant EWIP (c "SCM_MAKE_INT(EWIP)"))
-(define-constant ERST (c "SCM_MAKE_INT(ERST)"))
-(define-constant EPWR (c "SCM_MAKE_INT(EPWR)"))
+(if (defined ___NI4882_H___)
+  (begin
+    (define-constant ELCK (c "SCM_MAKE_INT(ELCK)"))
+    (define-constant EARM (c "SCM_MAKE_INT(EARM)"))
+    (define-constant EHDL (c "SCM_MAKE_INT(EHDL)"))
+    (define-constant EWIP (c "SCM_MAKE_INT(EWIP)"))
+    (define-constant ERST (c "SCM_MAKE_INT(ERST)"))
+    (define-constant EPWR (c "SCM_MAKE_INT(EPWR)"))))
 
 ;;
 ;; Warning messages returned in global variable iberr
 ;;
-(define-constant WCFG (c "SCM_MAKE_INT(WCFG)"))
-(define-constant ECFG (c "SCM_MAKE_INT(ECFG)"))
+(if (defined ___NI4882_H___)
+  (begin
+    (define-constant WCFG (c "SCM_MAKE_INT(WCFG)"))
+    (define-constant ECFG (c "SCM_MAKE_INT(ECFG)"))))
 
 ;;
 ;; EOS mode bits
@@ -135,8 +139,10 @@
 (define-constant IbcHSCableLength   (c "SCM_MAKE_INT(IbcHSCableLength)"))
 (define-constant IbcIst             (c "SCM_MAKE_INT(IbcIst)"))
 (define-constant IbcRsv             (c "SCM_MAKE_INT(IbcRsv)"))
-(define-constant IbcLON             (c "SCM_MAKE_INT(IbcLON)"))
-(define-constant IbcEOS             (c "SCM_MAKE_INT(IbcEOS)"))
+(if (defined ___NI4882_H___)
+  (begin
+    (define-constant IbcLON             (c "SCM_MAKE_INT(IbcLON)"))
+    (define-constant IbcEOS             (c "SCM_MAKE_INT(IbcEOS)"))))
 
 ;;
 ;;
@@ -165,9 +171,12 @@
 (define-constant IbaHSCableLength   (c "SCM_MAKE_INT(IbaHSCableLength)"))
 (define-constant IbaIst             (c "SCM_MAKE_INT(IbaIst)"))
 (define-constant IbaRsv             (c "SCM_MAKE_INT(IbaRsv)"))
-(define-constant IbaLON             (c "SCM_MAKE_INT(IbaLON)"))
-(define-constant IbaSerialNumber    (c "SCM_MAKE_INT(IbaSerialNumber)"))
-(define-constant IbaEOS             (c "SCM_MAKE_INT(IbaEOS)"))
+
+(if (defined ___NI4882_H___)
+  (begin
+    (define-constant IbaLON             (c "SCM_MAKE_INT(IbaLON)"))
+    (define-constant IbaSerialNumber    (c "SCM_MAKE_INT(IbaSerialNumber)"))
+    (define-constant IbaEOS             (c "SCM_MAKE_INT(IbaEOS)"))))
 (define-constant IbaBNA             (c "SCM_MAKE_INT(IbaBNA)"))
 
 ;;
@@ -208,306 +217,146 @@
 (define-constant BusDAV             (c "SCM_MAKE_INT(BusDAV)"))
 
 
-;; int  NI488CC ibfindA  (const char * udname);
-(define-cproc ibfindA (udname::<const-cstring>) ::<int>  (return (ibfindA udname)))
+(define-cproc ibfind   (udname::<const-cstring>)                ::<int>  (return (ibfind udname)))
+(define-cproc ibask    (ud::<int> option::<int> v::<s32vector>) ::<int>  (return (ibask  ud option (SCM_UVECTOR_ELEMENTS v))))
+(if (defined ___PUBLIC_GPIB_H)
+  (define-cproc ibbna    (ud::<int> board_name::<string>)       ::<int>  (return (ibbna  ud (Scm_GetString board_name)))))
+(define-cproc ibcac    (ud::<int> synchronous::<int>)           ::<int>  (return (ibcac  ud synchronous)))
+(define-cproc ibclr    (ud::<int>)                              ::<int>  (return (ibclr  ud)))
+(define-cproc ibcmd    (ud::<int> buf::<u8vector>)              ::<int>  (return (ibcmd  ud (SCM_UVECTOR_ELEMENTS buf) (SCM_UVECTOR_SIZE buf))))
+(define-cproc ibcmda   (ud::<int> buf::<u8vector>)              ::<int>  (return (ibcmda ud (SCM_UVECTOR_ELEMENTS buf) (SCM_UVECTOR_SIZE buf))))
+(define-cproc ibconfig (ud::<int> option::<int> value::<int>)   ::<int>  (return (ibconfig ud option value)))
+(define-cproc ibdev    (boardID::<int> pad::<int> sad::<int> timo::<int> send_eoi::<int> eosmode::<int>) ::<int>
+  (return (ibdev boardID pad sad timo send_eoi eosmode)));
+(define-cproc ibgts    (ud::<int> v::<int>)                     ::<int>  (return (ibgts ud v)))
+(define-cproc iblines  (ud::<int> result::<s16vector>)          ::<int>  (return (iblines ud (SCM_UVECTOR_ELEMENTS result))))
+(define-cproc ibln     (ud::<int> pad::<int> sad::<int> listen::<s16vector>) ::<int> (return (ibln ud pad sad (SCM_UVECTOR_ELEMENTS listen))))
+(define-cproc ibloc    (ud::<int>) ::<uint> (return (ibloc ud)))
+(define-cproc ibonl    (ud::<int> v::<int>)                     ::<int>  (return (ibonl ud v)))
+(define-cproc ibpct    (ud::<int>)                              ::<int>  (return (ibpct ud)))
+(define-cproc ibppc    (ud::<int> v::<int>)                     ::<int>  (return (ibppc ud v)))
+(define-cproc ibrd     (ud::<int> buf::<u8vector>)              ::<int>  (return (ibrd  ud (SCM_UVECTOR_ELEMENTS buf) (SCM_UVECTOR_SIZE buf))))
+(define-cproc ibrda    (ud::<int> buf::<u8vector>)              ::<int>  (return (ibrda ud (SCM_UVECTOR_ELEMENTS buf) (SCM_UVECTOR_SIZE buf))))
+(define-cproc ibrdf    (ud::<int> filename::<const-cstring>)    ::<int>  (return (ibrdf ud filename)))
+(define-cproc ibrpp    (ud::<int> ppr::<s8vector>)              ::<int>  (return (ibrpp ud (SCM_UVECTOR_ELEMENTS ppr))))
+(define-cproc ibrsp    (ud::<int> spr::<s8vector>)              ::<int>  (return (ibrsp ud (SCM_UVECTOR_ELEMENTS spr))))
+(define-cproc ibsic    (ud::<int>)                              ::<int>  (return (ibsic ud)))
+(define-cproc ibstop   (ud::<int>)                              ::<int>  (return (ibstop ud)))
+(define-cproc ibtrg    (ud::<int>)                              ::<int>  (return (ibtrg ud)))
+(define-cproc ibwait   (ud::<int> mask::<int>)                  ::<int>  (return (ibwait ud mask)))
+(define-cproc ibwrt    (ud::<int> buf::<u8vector>)              ::<int>  (return (ibwrt  ud (SCM_UVECTOR_ELEMENTS buf) (SCM_UVECTOR_SIZE buf))))
+(define-cproc ibwrta   (ud::<int> buf::<u8vector>)              ::<int>  (return (ibwrta ud (SCM_UVECTOR_ELEMENTS buf) (SCM_UVECTOR_SIZE buf))))
 
-;; unsigned int NI488CC ibrdfA   (int ud, const char * filename);
-(define-cproc ibrdfA  (ud::<int> filename::<const-cstring>) ::<uint>  (return (ibrdfA  ud filename)))
-
-;; unsigned int NI488CC ibwrtfA  (int ud, const char * filename);
-(define-cproc ibwrtfA (ud::<int> filename::<const-cstring>) ::<uint>  (return (ibwrtfA ud filename)))
-
-;; unsigned int NI488CC ibask    (int ud, int option, int * v);   XXX assumes sizeof(int) = 32bit
-(define-cproc ibask (ud::<int> option::<int> v::<s32vector>) ::<uint> (return (ibask ud option (SCM_UVECTOR_ELEMENTS v))))
-
-;; unsigned int NI488CC ibcac    (int ud, int v);
-(define-cproc ibcac (ud::<int> v::<int>) ::<uint> (return (ibcac ud v)))
-
-;; unsigned int NI488CC ibclr    (int ud);
-(define-cproc ibclr (ud::<int>) ::<uint> (return (ibclr ud)))
-
-;; unsigned int NI488CC ibcmd    (int ud, const void * buf, size_t cnt);    XXX check buf size!!
-(define-cproc ibcmd  (ud::<int> buf::<const-cstring> cnt::<ulong>) ::<uint> (return (ibcmd  ud buf cnt)))
-
-;; unsigned int NI488CC ibcmda   (int ud, const void * buf, size_t cnt);    XXX check buf size!!
-(define-cproc ibcmda (ud::<int> buf::<const-cstring> cnt::<ulong>) ::<uint> (return (ibcmda ud buf cnt)))
-
-;; unsigned int NI488CC ibconfig (int ud, int option, int v);
-(define-cproc ibconfig (ud::<int> option::<int> v::<int>) ::<uint> (return (ibconfig ud option v)))
-
-;; int  NI488CC ibdev    (int boardID, int pad, int sad, int tmo, int eot, int eos);
-(define-cproc ibdev (boardID::<int> pad::<int> sad::<int> tmo::<int> eot::<int> eos::<int>) ::<int> (return (ibdev boardID pad sad tmo eot eos)));
-
-;; unsigned int NI488CC ibexpert (int ud, int option, const void * Input, void * Output);
-;; no documentation found....
-
-;; unsigned int NI488CC ibgts    (int ud, int v);
-(define-cproc ibgts (ud::<int> v::<int>) ::<uint> (return (ibgts ud v)))
-
-;; unsigned int NI488CC iblck    (int ud, int v, unsigned int LockWaitTime, void * Reserved);
-;; no documentation found....
-
-;; unsigned int NI488CC iblines  (int ud, short * result);   XXX assumes sizeof(short) = 16bit
-(define-cproc iblines (ud::<int> result::<s16vector>) ::<uint> (return (iblines ud (SCM_UVECTOR_ELEMENTS result))))
-
-;; unsigned int NI488CC ibln     (int ud, int pad, int sad, short * listen);
-(define-cproc ibln (ud::<int> pad::<int> sad::<int> listen::<s16vector>) ::<uint> (return (ibln ud pad sad (SCM_UVECTOR_ELEMENTS listen))))
-
-;; unsigned int NI488CC ibloc    (int ud);
-(define-cproc ibloc (ud::<int>) ::<uint> (return (ibloc ud)))
-
-;; unsigned int NI488CC ibnotify (int ud, int mask, GpibNotifyCallback_t Callback, void * RefData);
-;; Later...
-
-;; unsigned int NI488CC ibonl    (int ud, int v);
-(define-cproc ibonl (ud::<int> v::<int>) ::<uint> (return (ibonl ud v)))
-
-;; unsigned int NI488CC ibpct    (int ud);
-(define-cproc ibpct (ud::<int>) ::<uint> (return (ibpct ud)))
-
-;; unsigned int NI488CC ibppc    (int ud, int v);
-(define-cproc ibppc (ud::<int> v::<int>) ::<uint> (return (ibppc ud v)))
-
-;; unsigned int NI488CC ibrd     (int ud, void * buf, size_t cnt);   XXX check buf size!!
-(define-cproc ibrd  (ud::<int> buf::<s8vector> cnt::<ulong>) ::<uint> (return (ibrd ud (SCM_UVECTOR_ELEMENTS buf) cnt)))
-
-;; unsigned int NI488CC ibrda    (int ud, void * buf, size_t cnt);   XXX  check buf size!!
-(define-cproc ibrda (ud::<int> buf::<s8vector> cnt::<ulong>) ::<uint> (return (ibrda ud (SCM_UVECTOR_ELEMENTS buf) cnt)))
-
-;; unsigned int NI488CC ibrpp    (int ud, char * ppr);
-(define-cproc ibrpp (ud::<int> ppr::<s8vector>) ::<uint> (return (ibrpp ud (SCM_UVECTOR_ELEMENTS ppr))))
-
-;; unsigned int NI488CC ibrsp    (int ud, char * spr);
-(define-cproc ibrsp (ud::<int> spr::<s8vector>) ::<uint> (return (ibrsp ud (SCM_UVECTOR_ELEMENTS spr))))
-
-;; unsigned int NI488CC ibsic    (int ud);
-(define-cproc ibsic (ud::<int>) ::<uint> (return (ibsic ud)))
-
-;; unsigned int NI488CC ibstop   (int ud);
-(define-cproc ibstop (ud::<int>) ::<uint> (return (ibstop ud)))
-
-;; unsigned int NI488CC ibtrg    (int ud);
-(define-cproc ibtrg (ud::<int>) ::<uint> (return (ibtrg ud)))
-
-;;unsigned int NI488CC ibwait   (int ud, int mask);
-(define-cproc ibwait (ud::<int> mask::<int>) ::<uint> (return (ibwait ud mask)))
-
-;; unsigned int NI488CC ibwrt    (int ud, const void * buf, size_t cnt);
-(define-cproc ibwrt (ud::<int> buf::<s8vector> cnt::<ulong>) ::<uint> (return (ibwrt ud (SCM_UVECTOR_ELEMENTS buf) cnt)))
+(if (defined ___NI4882_H___)
+  (begin
+    (define-cproc Ibsta () ::<int> (return (Ibsta)))
+    (define-cproc Iberr () ::<int> (return (Iberr)))
+    (define-cproc Ibcnt () ::<int> (return (Ibcnt))))
+  (begin
+    (define-cproc Ibsta () ::<int> (return ibsta))
+    (define-cproc Iberr () ::<int> (return iberr))
+    (define-cproc Ibcnt () ::<int> (return ibcnt))))
 
 
-;; unsigned int NI488CC ibwrta   (int ud, const void * buf, size_t cnt);
-(define-cproc ibwrta (ud::<int> buf::<s8vector> cnt::<ulong>) ::<uint> (return (ibwrta ud (SCM_UVECTOR_ELEMENTS buf) cnt)))
-
-;; unsigned int NI488CC Ibsta(void);
-(define-cproc Ibsta () ::<uint> (return (Ibsta)))
-
-;; unsigned int NI488CC Iberr(void);
-(define-cproc Iberr () ::<uint> (return (Iberr)))
-
-;; unsigned int NI488CC Ibcnt(void);
-(define-cproc Ibcnt () ::<uint> (return (Ibcnt)))
-
-;; void NI488CC AllSpoll (int boardID, const Addr4882_t * addrlist, short * results);
-(define-cproc AllSpoll ( boardID::<int>
-                         addrlist::<s16vector>
-                         results::<s16vector> )
-              ::<void>
-  (AllSpoll boardID
-            (SCM_UVECTOR_ELEMENTS addrlist)
-            (SCM_UVECTOR_ELEMENTS results)))
-
-;; void NI488CC DevClear       (int boardID, Addr4882_t addr);
-(define-cproc DevClear ( boardID::<int>
-                         addr::<short>  )
-  ::<void>
-  (DevClear boardID addr))
-
-;; void NI488CC DevClearList   (int boardID, const Addr4882_t * addrlist);   ;; XXX ToDl: check if it is zero terminated
-(define-cproc DevClearList ( boardID::<int>
-                             addrlist::<s16vector> )
-              ::<void>
-  (DevClearList boardID (SCM_UVECTOR_ELEMENTS addrlist)))
-
-;; void NI488CC EnableLocal    (int boardID, const Addr4882_t *addrlist);
-(define-cproc EnableLocal ( boardID::<int>
-                            addrlist::<s16vector> )
-              ::<void>
-  (EnableLocal boardID (SCM_UVECTOR_ELEMENTS addrlist)))
-
-;; void NI488CC EnableRemote   (int boardID, const Addr4882_t *addrlist);
-(define-cproc EnableRemote ( boardID::<int>
-                             addrlist::<s16vector>)
-              ::<void>
-  (EnableRemote boardID (SCM_UVECTOR_ELEMENTS addrlist)))
-
-;; void NI488CC FindLstn       (int boardID, const Addr4882_t *addrlist, Addr4882_t *results, size_t limit);
-(define-cproc FindLstn ( boardID::<int>
-                         addrlist::<s16vector>
-                         results::<s16vector>
-                         limit::<ulong> )
-              ::<void>
-  (FindLstn boardID
-            (SCM_UVECTOR_ELEMENTS addrlist)
-            (SCM_UVECTOR_ELEMENTS results)
-            limit))
-
-;; void NI488CC FindRQS        (int boardID, const Addr4882_t * addrlist, short * dev_stat);
-(define-cproc FindRQS ( boardID::<int>
+(define-cproc AllSpoll (board_desc::<int>
                         addrlist::<s16vector>
-                        dev_stat::<s16vector> )
-              ::<void>
-  (FindRQS boardID
-           (SCM_UVECTOR_ELEMENTS addrlist)
-           (SCM_UVECTOR_ELEMENTS dev_stat)))
+                        results::<s16vector> )::<void>
+              (AllSpoll board_desc
+                        (SCM_UVECTOR_ELEMENTS addrlist)
+                        (SCM_UVECTOR_ELEMENTS results)))
 
-;; void NI488CC PPoll          (int boardID, short * result);
-(define-cproc PPoll ( boardID::<int>
-                      result::<s16vector> )
-              ::<void>
-  (PPoll boardID
-         (SCM_UVECTOR_ELEMENTS result)))
+(define-cproc DevClear     (board_desc::<int> addr::<short> )         ::<void> (DevClear     board_desc addr))
+(define-cproc DevClearList (board_desc::<int> addrlist::<s16vector> ) ::<void> (DevClearList board_desc (SCM_UVECTOR_ELEMENTS addrlist)))
+(define-cproc EnableLocal  (board_desc::<int> addrlist::<s16vector> ) ::<void> (EnableLocal  board_desc (SCM_UVECTOR_ELEMENTS addrlist)))
+(define-cproc EnableRemote (board_desc::<int> addrlist::<s16vector>)  ::<void> (EnableRemote board_desc (SCM_UVECTOR_ELEMENTS addrlist)))
 
-;; void NI488CC PPollConfig    (int boardID, Addr4882_t addr, int dataLine, int lineSense);
-(define-cproc PPollConfig ( boardID::<int>
-                            addr::<short>
-                            dataline::<int>
-                            lineSense::<int> )
-              ::<void>
-  (PPollConfig boardID addr dataline lineSense))
-
-;; void NI488CC PPollUnconfig  (int boardID, const Addr4882_t * addrlist);
-(define-cproc PPollUnconfig ( boardID::<int>
-                              addrlist::<s16vector> )
-              ::<void>
-  (PPollUnconfig boardID
-                 (SCM_UVECTOR_ELEMENTS addrlist)))
-
-;; void NI488CC PassControl    (int boardID, Addr4882_t addr);
-(define-cproc PassControl ( boardID::<int> addr::<short> )
-              ::<void>
-  (PassControl boardID addr))
-
-;; void NI488CC RcvRespMsg     (int boardID, void * buffer, size_t cnt, int Termination);
-(define-cproc RcvRespMsg ( boardID::<int>
-                           buffer::<u8vector>
-                           cnt::<ulong>
-                           Termination::<int> )
-              ::<void>
-  ;;  XXX check size of buffer
-  (RcvRespMsg boardID (SCM_UVECTOR_ELEMENTS buffer) cnt Termination))
-
-;; void NI488CC ReadStatusByte (int boardID, Addr4882_t addr, short * result);
-(define-cproc ReadStatusByte ( boardID::<int>
-                               addr::<short>
-                               result::<s16vector> )
-              ::<void>
-  (ReadStatusByte boardID addr (SCM_UVECTOR_ELEMENTS result)))
-
-;; void NI488CC Receive        (int boardID, Addr4882_t addr, void * buffer, size_t cnt, int Termination);
-(define-cproc Receive ( boardID::<int>
-                        addr::<short>
-                        buffer::<s8vector>
-                        cnt::<ulong>
-                        Termination::<int> )
-              ::<void>
-  (Receive boardID addr (SCM_UVECTOR_ELEMENTS buffer) cnt Termination))
-
-;; void NI488CC ReceiveSetup   (int boardID, Addr4882_t addr);
-(define-cproc ReceiveSetup ( boardID::<int>
-                             addr::<short> )
-              ::<void>
-  (ReceiveSetup boardID addr))
-
-;; void NI488CC ResetSys       (int boardID, const Addr4882_t * addrlist);
-(define-cproc ResetSys ( boardID::<int>
-                         addrlist::<s16vector> )
-              ::<void>
-  (ResetSys boardID (SCM_UVECTOR_ELEMENTS addrlist)))
-
-;; void NI488CC Send           (int boardID, Addr4882_t addr, const void * databuf, size_t datacnt, int eotMode);
-(define-cproc Send ( boardID::<int>
-                     addr::<short>
-                     databuf::<u8vector>
-                     datacnt::<ulong>
-                     eotMode::<int> )
-              ::<void>
-  (Send boardID addr (SCM_UVECTOR_ELEMENTS databuf) datacnt eotMode))
-
-;; void NI488CC SendCmds       (int boardID, const void * buffer, size_t cnt);
-(define-cproc SendCmds ( boardID::<int>
-                         buffer::<u8vector>
-                         cnt::<ulong> )
-              ::<void>
-  (SendCmds boardID (SCM_UVECTOR_ELEMENTS buffer) cnt))
-
-;; void NI488CC SendDataBytes  (int boardID, const void * buffer, size_t cnt, int eot_mode);
-(define-cproc SendDataBytes ( boardID::<int>
-                              buffer::<u8vector>
-                              cnt::<ulong>
-                              eot_mode::<int> )
-              ::<void>
-  (SendDataBytes boardID (SCM_UVECTOR_ELEMENTS buffer) cnt eot_mode))
-
-;; void NI488CC SendIFC        (int boardID);
-(define-cproc SendIFC ( boardID::<int> ) ::<void> (SendIFC boardID))
-
-;; void NI488CC SendLLO        (int boardID);
-(define-cproc SendLLO ( boardID::<int> ) ::<void> (SendLLO boardID))
-
-;; void NI488CC SendList       (int boardID, const Addr4882_t * addrlist, const void * databuf, size_t datacnt, int eotMode);
-(define-cproc SendList ( boardID::<int>
-                         addrlist::<s16vector>
-                         databuf::<u8vector>
-                         datacnt::<ulong>
-                         eotMode::<int> )
-              ::<void>
-  (SendList boardID (SCM_UVECTOR_ELEMENTS addrlist) (SCM_UVECTOR_ELEMENTS databuf) datacnt eotMode))
-
-;; void NI488CC SendSetup      (int boardID, const Addr4882_t * addrlist);
-(define-cproc SendSetup ( boardID::<int>
-                          addrlist::<s16vector> )
-              ::<void>
-  (SendSetup boardID (SCM_UVECTOR_ELEMENTS addrlist)))
-
-;; void NI488CC SetRWLS        (int boardID, const Addr4882_t * addrlist);
-(define-cproc SendRWLS ( boardID::<int>
-                         addrlist::<s16vector> )
-              ::<void>
-  (SetRWLS boardID (SCM_UVECTOR_ELEMENTS addrlist)))
-
-;; void NI488CC TestSRQ        (int boardID, short * result);
-(define-cproc TestSRQ ( boardID::<int>
-                        result::<s16vector> )
-              ::<void>
-  (TestSRQ boardID (SCM_UVECTOR_ELEMENTS result)))
-
-;; void NI488CC TestSys        (int boardID, const Addr4882_t * addrlist, short * results);
-(define-cproc TestSys ( boardID::<int>
+(define-cproc FindLstn (board_desc::<int>
                         addrlist::<s16vector>
-                        results::<s16vector> )
-              ::<void>
-  (TestSys boardID
-           (SCM_UVECTOR_ELEMENTS addrlist)
-           (SCM_UVECTOR_ELEMENTS results)))
+                        results::<s16vector>
+                        limit::<ulong>)::<void>
+              (FindLstn board_desc
+                        (SCM_UVECTOR_ELEMENTS addrlist)
+                        (SCM_UVECTOR_ELEMENTS results)
+                        limit))
 
-;; void NI488CC Trigger        (int boardID, Addr4882_t addr);
-(define-cproc Trigger ( boardID::<int>
-                        addr::<short> )
-              ::<void>
-  (Trigger boardID addr))
+(define-cproc FindRQS (board_desc::<int>
+                       addrlist::<s16vector>
+                       dev_stat::<s16vector>)::<void>
+              (FindRQS board_desc
+                       (SCM_UVECTOR_ELEMENTS addrlist)
+                       (SCM_UVECTOR_ELEMENTS dev_stat)))
 
-;; void NI488CC TriggerList    (int boardID, const Addr4882_t * addrlist);
-(define-cproc TriggerList ( boardID::<int>
-                            addrlist::<s16vector> )
-              ::<void>
-  (TriggerList boardID (SCM_UVECTOR_ELEMENTS addrlist)))
+(define-cproc PPoll       (board_desc::<int> result::<s16vector> )                            ::<void> (PPoll board_desc (SCM_UVECTOR_ELEMENTS result)))
+(define-cproc PPollConfig (board_desc::<int> addr::<short> dataline::<int> lineSense::<int> ) ::<void> (PPollConfig board_desc addr dataline lineSense))
+(define-cproc PPollUnconfig (board_desc::<int> addrlist::<s16vector> )                        ::<void> (PPollUnconfig board_desc (SCM_UVECTOR_ELEMENTS addrlist)))
+(define-cproc PassControl (board_desc::<int> addr::<short>)                                   ::<void> (PassControl board_desc addr))
 
-;; void NI488CC WaitSRQ        (int boardID, short * result);
-(define-cproc WaitSRQ ( boardID::<int>
-                        result::<s16vector> )
-              ::<void>
-  (WaitSRQ boardID (SCM_UVECTOR_ELEMENTS result)))
+(define-cproc RcvRespMsg (board_desc::<int> buffer::<u8vector>  Termination::<int>)::<void>
+             (RcvRespMsg board_desc
+                         (SCM_UVECTOR_ELEMENTS buffer)
+                         (SCM_UVECTOR_SIZE     buffer)
+                         Termination))
+
+(define-cproc ReadStatusByte (board_desc::<int> addr::<short> result::<s16vector>)::<void>
+             (ReadStatusByte  board_desc addr (SCM_UVECTOR_ELEMENTS result)))
+
+(define-cproc Receive (board_desc::<int> addr::<short> buffer::<s8vector> Termination::<int>)::<void>
+             (Receive  board_desc
+                       addr
+                       (SCM_UVECTOR_ELEMENTS buffer)
+                       (SCM_UVECTOR_SIZE     buffer)
+                       Termination))
+
+(define-cproc ReceiveSetup (board_desc::<int> addr::<short>)         ::<void>  (ReceiveSetup board_desc addr))
+(define-cproc ResetSys     (board_desc::<int> addrlist::<s16vector>) ::<void>  (ResetSys board_desc (SCM_UVECTOR_ELEMENTS addrlist)))
+
+(define-cproc Send (board_desc::<int>
+                    addr::<short>
+                    databuf::<u8vector>
+                    eot_mode::<int>)::<void>
+              (Send board_desc
+                    addr
+                    (SCM_UVECTOR_ELEMENTS databuf)
+                    (SCM_UVECTOR_SIZE     databuf)
+                    eot_mode))
+
+(define-cproc SendCmds (board_desc::<int> buffer::<u8vector>)::<void> (SendCmds  board_desc (SCM_UVECTOR_ELEMENTS buffer) (SCM_UVECTOR_SIZE buffer)))
+
+(define-cproc SendDataBytes (board_desc::<int>
+                             buffer::<u8vector>
+                             eot_mode::<int>)::<void>
+              (SendDataBytes board_desc
+                             (SCM_UVECTOR_ELEMENTS buffer)
+                             (SCM_UVECTOR_SIZE buffer)
+                             eot_mode))
+
+(define-cproc SendIFC (board_desc::<int>) ::<void> (SendIFC board_desc))
+(define-cproc SendLLO (board_desc::<int>) ::<void> (SendLLO board_desc))
+
+(define-cproc SendList (board_desc::<int>
+                        addrlist::<s16vector>
+                        databuf::<u8vector>
+                        eot_mode::<int>)::<void>
+              (SendList board_desc
+                        (SCM_UVECTOR_ELEMENTS addrlist)
+                        (SCM_UVECTOR_ELEMENTS databuf)
+                        (SCM_UVECTOR_SIZE databuf)
+                        eot_mode))
+
+(define-cproc SendSetup (board_desc::<int> addrlist::<s16vector>)   ::<void> (SendSetup board_desc (SCM_UVECTOR_ELEMENTS addrlist)))
+(define-cproc SendRWLS  (board_desc::<int> addrlist::<s16vector>)   ::<void> (SetRWLS   board_desc (SCM_UVECTOR_ELEMENTS addrlist)))
+(define-cproc TestSRQ   (board_desc::<int> result::<s16vector>)     ::<void> (TestSRQ   board_desc (SCM_UVECTOR_ELEMENTS result)))
+
+(define-cproc TestSys (board_desc::<int>
+                       addrlist::<s16vector>
+                       results::<s16vector>)::<void>
+              (TestSys board_desc
+                       (SCM_UVECTOR_ELEMENTS addrlist)
+                       (SCM_UVECTOR_ELEMENTS results)))
+
+(define-cproc Trigger     (board_desc::<int> addr::<short>)          ::<void>   (Trigger board_desc addr))
+(define-cproc TriggerList (board_desc::<int> addrlist::<s16vector>)  ::<void>   (TriggerList board_desc (SCM_UVECTOR_ELEMENTS addrlist)))
+(define-cproc WaitSRQ     (board_desc::<int> result::<s16vector> )   ::<void>   (WaitSRQ board_desc (SCM_UVECTOR_ELEMENTS result)))
 
 ;; Local variables:
 ;; mode: scheme
