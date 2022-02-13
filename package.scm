@@ -5,7 +5,7 @@
 (define-gauche-package "ni4882"
   ;; 
   :version "0.1"
-  :description "ni4882 binding"
+  :description "Linux GPIB, ni488.2 binding"
   :require ()
   :providing-modules ( ni4882 )
   :authors ( "Shigenobu Kimura <skimu@mac.com>" )
