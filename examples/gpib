@@ -81,7 +81,7 @@
     (ck "(ibonl)")
     0))
 
-(define (listdev)
+(define (listdev-old)
   (let ((iaddr #s16(1  2  3  4  5  6  7  8  9 10
                    11 12 13 14 15 16 17 18 19 20
                    21 22 23 24 25 26 27 28 29 30
@@ -100,6 +100,29 @@
               (sad (GetSAD (uvector-ref oaddr i))))
           (print-idn pad sad)))
       0)))
+
+(define (for-all-dev func)
+  (let ((iaddr #s16(1  2  3  4  5  6  7  8  9 10
+                   11 12 13 14 15 16 17 18 19 20
+                   21 22 23 24 25 26 27 28 29 30
+                   -1))
+        (oaddr (make-s16vector 32 0)))
+    (SendIFC board)
+    (ck "(SendIFC)")
+    (FindLstn board iaddr oaddr 31)
+    (ck "(FindLstn)")
+    (let ((ndev (Ibcnt)))
+      (if (> ndev 30)
+        (error "ibcnt > 30"))
+      (do ((i 0 (+ i 1)))
+          ((>= i ndev) #t)
+        (let ((pad (GetPAD (uvector-ref oaddr i)))
+              (sad (GetSAD (uvector-ref oaddr i))))
+          (func pad sad)))
+      0)))
+
+(define (listdev)  (for-all-dev print-idn))
+(define (resetall) (for-all-dev (lambda (pad sad) (wrt pad sad "*RST; *CLS"))))
 
 (define (wrt pad sad str)
   (let ((dev (ibdev board pad sad T300ms 1 0)))
@@ -130,7 +153,8 @@
 (define (print-usage)
   (print "Usage:
 
-    gpib listdev                        --  lists devices on GPIB bus.
+    gpib listdev                        --  lists all devices on GPIB bus.
+    gpib resetall                       --  resets all devices on GPIB bus.
     gpib wrt pad sad message            --  write message at pad sad.
     gpib wrtrd pad sad message          --  write message then read response.
 
@@ -145,7 +169,7 @@ Examples:
     gpib wrt   5 0 \"*RST; *CLS\"
 
   Send \"*RST; *CLS\" to devices 5--8 at once.
-    
+
     for i in 5 6 7 8; do gpib wrt $i 0 \"*RST: *CLS\"; done
 "))
 
@@ -153,6 +177,7 @@ Examples:
   (if (> (length args) 1)
     (let ((cmd (list-ref args 1)))
       (cond ((string=? cmd "listdev") (listdev))
+            ((string=? cmd "resetall") (resetall))
             ((string=? cmd "wrt")
              (wrt (string->number (list-ref args 2))
                   (string->number (list-ref args 3))
